@@ -7,11 +7,30 @@ const cors = require('cors')
 app.use(cors())
 app.use(express.json())
 const port = process.env.PORT || 5000
+const serviceAccount = require('./bid-autopia-secreat-key.json');
+const admin = require("firebase-admin");
+
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount)
+});
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.m8c0v.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
+async function verifyToken(req, res, next) {
+   const token = req?.headers?.authorization;
+    try {
+        if (token.startsWith('Bearer ')) {
+            const idToken = token.split('Bearer ')[1]
+            const decodeToken = admin.auth().verifyIdToken(idToken)
+            req.userDecodeToken = decodeToken;
+        }
+    } catch {
 
+    }
+
+    next()
+}
 // console.log(uri);
 
 async function run() {
@@ -48,19 +67,27 @@ async function run() {
             const result = await soldedOutCarsCollection.find({}).toArray()
             res.json(result)
         })
-        app.get('/myOrders/:email', async (req, res) => {
+        app.get('/myOrders/:email', verifyToken, async (req, res) => {
+            console.log(req.headers);
             const email = req.params.email;
-            const query = { email: email }
-            const result = await soldedOutCarsCollection.find(query).toArray()
-            res.json(result)
+            if (req.userDecodeToken === email) {
+                const query = { email: email }
+                const result = await soldedOutCarsCollection.find(query).toArray()
+                res.json(result)
+            } else {
+                res.status(401).json({ message: 'User not Authorized!' })
+            }
+
         })
 
         app.post('/soldedOut', async (req, res) => {
+
             const soldedCar = req.body;
             const result = await soldedOutCarsCollection.insertOne(soldedCar);
             res.json(result)
         })
         app.post('/reviews', async (req, res) => {
+
             const reviews = req.body;
             const result = await reviewsCollection.insertOne(reviews);
             res.json(result)
@@ -109,7 +136,7 @@ async function run() {
         app.put('/approve', async (req, res) => {
             const id = req.body.id;
             const email = req.body.email;
-            console.log((id, email));
+            // console.log((id, email));
             const filter = { email: email, _id: ObjectId(id) }
             const updateStatus = {
                 $set: {
