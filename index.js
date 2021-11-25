@@ -18,7 +18,7 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
 async function verifyToken(req, res, next) {
-   const token = req?.headers?.authorization;
+    const token = req?.headers?.authorization;
     try {
         if (token.startsWith('Bearer ')) {
             const idToken = token.split('Bearer ')[1]
@@ -70,14 +70,9 @@ async function run() {
         app.get('/myOrders/:email', async (req, res) => {
             console.log(req.headers);
             const email = req.params.email;
-            if (req.userDecodeToken === email) {
-                const query = { email: email }
-                const result = await soldedOutCarsCollection.find(query).toArray()
-                res.json(result)
-            } else {
-                res.status(401).json({ message: 'User not Authorized!' })
-            }
-
+            const query = { email: email }
+            const result = await soldedOutCarsCollection.find(query).toArray()
+            res.json(result)
         })
 
         app.post('/soldedOut', async (req, res) => {
