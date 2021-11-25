@@ -67,7 +67,7 @@ async function run() {
             const result = await soldedOutCarsCollection.find({}).toArray()
             res.json(result)
         })
-        app.get('/myOrders/:email', verifyToken, async (req, res) => {
+        app.get('/myOrders/:email', async (req, res) => {
             console.log(req.headers);
             const email = req.params.email;
             if (req.userDecodeToken === email) {
