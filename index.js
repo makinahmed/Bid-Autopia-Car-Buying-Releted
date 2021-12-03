@@ -4,12 +4,12 @@ const ObjectId = require('mongodb').ObjectID
 require("dotenv").config();
 const app = express()
 const cors = require('cors')
+const { initializeApp } = require('firebase-admin/app');
 app.use(cors())
 app.use(express.json())
-const port = process.env.PORT || 5000
-const serviceAccount = require('./bid-autopia-secreat-key.json');
+const port = process.env.PORT || 8000
 const admin = require("firebase-admin");
-
+const serviceAccount = require('./bid-autopia-secreat-key.json');
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
 });
@@ -18,16 +18,19 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
 async function verifyToken(req, res, next) {
-    const token = req?.headers?.authorization;
+    console.log();
     try {
-        if (token.startsWith('Bearer ')) {
-            const idToken = token.split('Bearer ')[1]
-            const decodeToken = admin.auth().verifyIdToken(idToken)
-            req.userDecodeToken = decodeToken;
+        if (req?.headers?.authorization?.startsWith('Bearer ')) {
+            const idToken = req?.headers?.authorization?.split('Bearer ')[1]
+            const decodeToken = await admin.auth().verifyIdToken(idToken)
+            console.log(decodeToken.email);
+            req.userDecodeToken = decodeToken.email;
+
         }
     } catch {
 
     }
+
 
     next()
 }
@@ -67,12 +70,16 @@ async function run() {
             const result = await soldedOutCarsCollection.find({}).toArray()
             res.json(result)
         })
-        app.get('/myOrders/:email', async (req, res) => {
-            console.log(req.headers);
+        app.get('/myOrders/:email', verifyToken, async (req, res) => {
             const email = req.params.email;
-            const query = { email: email }
-            const result = await soldedOutCarsCollection.find(query).toArray()
-            res.json(result)
+            if (req.userDecodeToken === email) {
+                console.log(email);
+                const query = { email: email }
+                const result = await soldedOutCarsCollection.find(query).toArray()
+                res.json(result)
+            } else {
+                res.json({ message: "Unauthorized user authentication." })
+            }
         })
 
         app.post('/soldedOut', async (req, res) => {
