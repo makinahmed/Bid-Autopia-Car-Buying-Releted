@@ -7,19 +7,16 @@
 
 ### Features and Functionalities:
 
-    * This website contains admin and user section.
-    * Admin can add products,delete products,cancel orders,approve booking request and all orders and products .
-    * Users can see only his/her orders, cancel orders,see all available products list,
-        can order any products , after order/booking he/she can cancel order/bookings,
-    * Only Logged in users can review  any products.
-    * Only Logged in users can see dashboard.
+    ● This website contains an admin and user section.
+    ● Admin can add products, delete products, cancel orders, approve booking requests and all orders and
+    products .
+    ●Users can see only his/her orders, cancel orders,see all available products list,can order any products ,
+    after order/booking he/she can cancel order/bookings and see the dashboard as well.
+    ● Only Logged in users can review any products and reviews will show in the home page .
+    ● Private routes can not be accessed without login . If users want to access a private route he/she will be
+    redirected to the login page . If normal users want to go the admin route she/he will be redirected to the
+    home page.
 
-
-### Description : 
-
-    Bid Autopia is  car dealer's Website. Here any kind of cars is available . 
-    Any prominent car brands you can find in this website. Like : SPORT-UTILITY VEHICLE,
-    COUPE. Mercedes-Benz,HATCHBACK,SPORTS CAR,CONVERTIBLE , HYBRID, ELECTRIC cars.
 
 ### Tools : 
 
