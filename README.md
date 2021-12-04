@@ -3,12 +3,7 @@
 
 
 ## https://bid-autopia.web.app/
-
-#### Server Side Git Repo Link : 
-    https://github.com/programming-hero-web-course-4/niche-website-server-side-makinahmed
-
-#### Client Side Git Repo Link : 
-    https://github.com/programming-hero-web-course-4/niche-website-client-side-makinahmed   
+ 
 
 ### Features and Functionalities:
 
